@@ -12,7 +12,7 @@ from RNN_utils import *
 
 # Parsing arguments for Network definition
 ap = argparse.ArgumentParser()
-ap.add_argument('-data_dir', default='./data/test.txt')
+ap.add_argument('-data_dir', default='shades.txt')
 ap.add_argument('-batch_size', type=int, default=50)
 ap.add_argument('-layer_num', type=int, default=2)
 ap.add_argument('-seq_length', type=int, default=50)
@@ -53,15 +53,19 @@ if not WEIGHTS == '':
 else:
   nb_epoch = 0
 
+epochs_per_iteration = 10
+
 # Training if there is no trained weights specified
 if args['mode'] == 'train' or WEIGHTS == '':
   while True:
     print('\n\nEpoch: {}\n'.format(nb_epoch))
-    model.fit(X, y, batch_size=BATCH_SIZE, verbose=1, nb_epoch=1)
-    nb_epoch += 1
-    generate_text(model, GENERATE_LENGTH, VOCAB_SIZE, ix_to_char)
-    if nb_epoch % 10 == 0:
-      model.save_weights('checkpoint_layer_{}_hidden_{}_epoch_{}.hdf5'.format(LAYER_NUM, HIDDEN_DIM, nb_epoch))
+    model.fit(X, y, batch_size=BATCH_SIZE, verbose=1, epochs=epochs_per_iteration)
+    nb_epoch += epochs_per_iteration
+    txt = generate_text(model, GENERATE_LENGTH, VOCAB_SIZE, ix_to_char)
+    with open('generated_' + str(nb_epoch), 'w') as out:
+    	out.write(txt)
+    # if nb_epoch % 10 == 0:
+    model.save_weights('checkpoint_layer_{}_hidden_{}_epoch_{}.hdf5'.format(LAYER_NUM, HIDDEN_DIM, nb_epoch))
 
 # Else, loading the trained weights and performing generation only
 elif WEIGHTS == '':
