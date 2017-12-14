@@ -20,7 +20,9 @@ def generate_text(model, length, vocab_size, ix_to_char):
 
 # method for preparing the training data
 def load_data(data_dir, seq_length):
-	data = open(data_dir, 'r').read()
+	with open(data_dir, 'rb') as bin_data:
+		data = bin_data.read().decode('utf8', 'ignore')
+	# data = open(data_dir, 'r').read()
 	chars = list(set(data))
 	VOCAB_SIZE = len(chars)
 
