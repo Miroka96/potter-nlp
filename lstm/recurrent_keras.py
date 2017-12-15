@@ -85,15 +85,15 @@ if MODE == 'train' or WEIGHTS == '':
         print('\n\nEpoch: {}\n'.format(actual_epoch))
         try:
             MODEL.fit(X, y, batch_size=BATCH_SIZE, verbose=1, epochs=EPI)
-        except:
+        except OSError:
             # sometimes an OSError occurs, especially on Windows 10 Systems...
             print('Encountered an Error while training this epoch')
             continue
 
         actual_epoch += EPI
         txt = generate_text(MODEL, GENERATE_LENGTH, ix_to_char)
-        with open('generated_' + str(actual_epoch), 'w') as out:
-            out.write(txt)
+        with open('generated_' + str(actual_epoch), 'wb') as out:
+            out.write(txt.encode(errors='ignore'))
         MODEL.save_weights('checkpoint_layer_{}_hidden_{}_epoch_{}.hdf5'.format(LAYER_NUM, HIDDEN_DIM, actual_epoch))
 
 # performing generation only
